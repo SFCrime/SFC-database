@@ -1,3 +1,2 @@
-- [ ] Install Flask-Restful. See: https://flask-restful.readthedocs.org/en/0.3.2/quickstart.html
 - [ ] Set up Custom Types for Flask Restful. See: http://flask-restful.readthedocs.org/en/latest/extending.html
-- [ ] Add proper error handling
+- [ ] Add Marshal with: https://flask-restful.readthedocs.org/en/0.3.2/quickstart.html#full-example
