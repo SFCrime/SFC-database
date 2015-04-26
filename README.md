@@ -1,9 +1,10 @@
 # quick start: db
-## install postgres and postgis
+## install postgres and postgis for mac
 ```bash
 $ brew install postgresql
 $ initdb /usr/local/var/postgres -E utf8
 $ brew install postgis --build-from-source
+# at times this install may fail on OSX. Just be sure to install that specific dependency manually.
 ```
 ## download data
 ```bash
