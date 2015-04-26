@@ -39,10 +39,15 @@ session = Session()
 @app.route('/api/v1/polygon/<coordinates>', methods=['GET'])
 def index(coordinates):
     '''
+    Converts URL Encoded (Space delimited) points
+    to a polygon and retrieves all crime within that area
+
+    Example:
     # View all crimes in Dolores Park by crime category
 
     $ curl -i 'http://localhost:5000/api/v1/polygon/%2D122.42841124534607%2037.76128348360843%2C%2D122.42810010910034%2037.7580942260561%2C%2D122.42584705352783%2037.75822145970878%2C%2D122.42613673210143%2037.76141071177564%2C%2D122.42841124534607%2037.76128348360843'
     '''
+
     poly_query = WKTElement('POLYGON((' + coordinates + '))', srid=4326)
 
     crime_cat = session.query(Crime.category, func.count(Crime.category)) \
@@ -52,12 +57,13 @@ def index(coordinates):
     crime_dict = defaultdict(list)
     for crime in crime_cat:
         crime_dict[crime[0]] = crime[1]
-
+# @TODO Need to add error handling for malformed requests
     return jsonify({'crimes': crime_dict})
 
 
 @app.errorhandler(404)
 def not_found(error):
+    """Simple 404 Error Handling"""
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
