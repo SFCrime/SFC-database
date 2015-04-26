@@ -50,8 +50,11 @@ class Crime(Base):
     geom = Column(Geometry('geography'))
 
 
-
 class CrimePolygon(restful.Resource):
+    """
+    Crime Polygon Class that wraps
+    polygon types for the crime table
+    """
     def get(self, coordinates):
         try:
             poly_query = WKTElement('POLYGON((' + coordinates + '))', srid=4326)
