@@ -1,2 +1,2 @@
 - [ ] Set up Custom Types for Flask Restful. See: http://flask-restful.readthedocs.org/en/latest/extending.html
-- [ ] Add Marshal with: https://flask-restful.readthedocs.org/en/0.3.2/quickstart.html#full-example
+- [ ] Need to make sure CORS is set up in a safe manner

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from flask import Flask, jsonify, make_response
 from flask.ext import restful
-
+from flask.ext.cors import CORS
 from flask.ext.restful import fields, marshal_with
 
 from sqlalchemy import Column, Integer, String, Date, \
@@ -14,6 +14,7 @@ from collections import defaultdict
 import psycopg2
 
 app = Flask(__name__)
+cors = CORS(app, resources=r"/api/*", allow_headers="Content-Type", supports_credentials=True)
 api = restful.Api(app)
 
 ## database
@@ -73,7 +74,7 @@ class CrimePolygon(restful.Resource):
             crime_dict = defaultdict(list)
             for crime in crime_cat:
                 crime_dict[crime[0]] = crime[1]
-            return crime_dict, 200
+            return {"data":crime_dict, "coordinates":coordinates}, 200
         except:
             session.rollback()
             return {}, 400
