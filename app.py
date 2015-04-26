@@ -67,6 +67,7 @@ class CrimePolygon(restful.Resource):
                 crime_dict[crime[0]] = crime[1]
             return crime_dict, 200
         except:
+            session.rollback()
             return {}, 400
 
 
