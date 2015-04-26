@@ -2,6 +2,8 @@
 from flask import Flask, jsonify, make_response
 from flask.ext import restful
 
+from flask.ext.restful import fields, marshal_with
+
 from sqlalchemy import Column, Integer, String, Date, \
     Time, Float, create_engine, func
 from sqlalchemy.orm import sessionmaker
@@ -22,12 +24,13 @@ session = Session()
 
 crime_api_v1 = "/api/v1/crime/"
 
-def response_decorator(func):
-    """Provides a decorator function to
-    embed our response within a response object"""
-    def func_wrap(*args, **kwargs):
-        return {"response": func(*args, **kwargs)}
-    return func_wrap
+# Think Marshal Decorators will fix this
+# def response_decorator(func):
+#     """Provides a decorator function to
+#     embed our response within a response object"""
+#     def func_wrap(*args, **kwargs):
+#         return {"response": func(*args, **kwargs)}
+#     return func_wrap
 
 Base = declarative_base()
 class Crime(Base):
@@ -49,12 +52,17 @@ class Crime(Base):
     pdid = Column(Integer, primary_key=True)
     geom = Column(Geometry('geography'))
 
+# This could be useful to make sure that we have consistent formating
+data_fields = {
+        'ARSON': fields.Integer,
+        }
 
 class CrimePolygon(restful.Resource):
     """
     Crime Polygon Class that wraps
     polygon types for the crime table
     """
+    # @marshal_with(data_fields)
     def get(self, coordinates):
         try:
             poly_query = WKTElement('POLYGON((' + coordinates + '))', srid=4326)
