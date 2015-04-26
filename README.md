@@ -1,4 +1,4 @@
-# quick start
+# quick start: db
 ## install postgres and postgis
 ```bash
 $ brew install postgresql
@@ -193,4 +193,24 @@ $ psql sfpd info247 -c "SELECT EXTRACT(YEAR FROM date) as year, COUNT(*) FROM cr
  2004 |  1323
  2003 |  1515
 (13 rows)
+```
+
+# quick start: api
+## start flask app
+```bash
+$ mkvirtualenv crime
+
+$ python -V
+# Python 3.4.2
+
+$ pip install -r requirements.txt
+
+$ chmod a+x app.py
+
+$ ./app.py
+```
+## use api
+view crimes by category in dolores park
+```bash
+$ curl -i 'http://localhost:5000/api/v1/polygon/%2D122.42841124534607%2037.76128348360843%2C%2D122.42810010910034%2037.7580942260561%2C%2D122.42584705352783%2037.75822145970878%2C%2D122.42613673210143%2037.76141071177564%2C%2D122.42841124534607%2037.76128348360843'
 ```
