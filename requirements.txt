@@ -1,0 +1,11 @@
+certifi==14.5.14
+Flask==0.10.1
+GeoAlchemy2==0.2.4
+itsdangerous==0.24
+Jinja2==2.7.3
+livereload==2.3.2
+MarkupSafe==0.23
+psycopg2==2.6
+SQLAlchemy==1.0.1
+tornado==4.1
+Werkzeug==0.10.4
