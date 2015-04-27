@@ -226,6 +226,7 @@ year | count
 ##Adding Events Table
   ```sql
   CREATE TABLE events (
+      id_name varchar(255) PRIMARY KEY,
       name varchar(250),
       year integer,
       start_date date,
@@ -237,12 +238,11 @@ year | count
       is_line boolean,
       polygon GEOGRAPHY(POLYGON,4326),
       line GEOGRAPHY(LINESTRING,4326),
-      point GEOGRAPHY(POINT,4326),
-      PRIMARY KEY (name, year)
+      point GEOGRAPHY(POINT,4326)
       );
   ```
   ## Adding the first Event
 
   ```sql
-INSERT INTO events (name,year ,start_date ,start_time ,end_date ,end_time ,is_point ,is_polygon , is_line, polygon) VALUES ('Hardly Strictly',2014,'10/3/2014','10:30AM','10/5/2014','07:00PM',false,true,false, ST_PolygonFromText('POLYGON((-122.51103401184083 37.771393199665255, -122.46597290039062 37.77356423357254, -122.45455741882324 37.774785412131244, -122.45301246643065 37.76637243960179, -122.45738983154297 37.76589748519095, -122.45867729187012 37.7662367386528, -122.51026153564452 37.7641333421029, -122.51103401184083 37.771393199665255))', 4326));
+INSERT INTO events (id_name, name,year ,start_date ,start_time ,end_date ,end_time ,is_point ,is_polygon , is_line, polygon) VALUES ('hardly-strictly-2014', 'Hardly Strictly',2014,'10/3/2014','10:30AM','10/5/2014','07:00PM',false,true,false, ST_PolygonFromText('POLYGON((-122.51103401184083 37.771393199665255, -122.46597290039062 37.77356423357254, -122.45455741882324 37.774785412131244, -122.45301246643065 37.76637243960179, -122.45738983154297 37.76589748519095, -122.45867729187012 37.7662367386528, -122.51026153564452 37.7641333421029, -122.51103401184083 37.771393199665255))', 4326));
   ```
