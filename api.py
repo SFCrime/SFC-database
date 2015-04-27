@@ -13,6 +13,7 @@ from geoalchemy2 import Geometry, WKTElement
 from geoalchemy2.shape import to_shape
 from collections import defaultdict
 import psycopg2
+import re
 
 app = Flask(__name__)
 cors = CORS(app, resources=r"/api/*", allow_headers="Content-Type",
@@ -29,14 +30,6 @@ api_version = "/api/v1/"
 
 crime_api = api_version + "crime/"
 events_api = api_version + "events/"
-
-# Think Marshal Decorators will fix this
-# def response_decorator(func):
-#     """Provides a decorator function to
-#     embed our response within a response object"""
-#     def func_wrap(*args, **kwargs):
-#         return {"response": func(*args, **kwargs)}
-#     return func_wrap
 
 Base = declarative_base()
 
@@ -99,9 +92,13 @@ class Event(restful.Resource):
 
             if res.is_polygon:
                 res.polygon = str(to_shape(res.polygon))
+                temp = re.findall(r"\(\((.*)\)\)", res.polygon)
+                t2 = temp[0].split(", ")
+                t3 = [val.split(" ") for val in t2]
+                res.polygon_points = [[float(l1), float(l2)] for l1, l2 in t3]
                 del(res.point)
                 del(res.line)
-
+# Will need to do the same filtering that I did above to the point/line types
             if res.is_point:
                 res.point = str(to_shape(res.point))
                 del(res.polygon)
