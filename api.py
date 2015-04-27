@@ -25,8 +25,10 @@ engine = create_engine(database)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-crime_api_v1 = "/api/v1/crime/"
-events_api_v1 = "/api/v1/events/"
+api_version = "/api/v1/"
+
+crime_api = api_version + "crime/"
+events_api = api_version + "events/"
 
 # Think Marshal Decorators will fix this
 # def response_decorator(func):
@@ -152,8 +154,8 @@ class CrimePolygon(restful.Resource):
             return {}, 400
 
 
-api.add_resource(CrimePolygon, crime_api_v1 + "polygon/<coordinates>")
-api.add_resource(Event, events_api_v1 + "<event_id>")
+api.add_resource(CrimePolygon, crime_api + "polygon/<coordinates>")
+api.add_resource(Event, events_api + "<event_id>")
 
 if __name__ == '__main__':
     app.run(debug=True)
