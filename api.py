@@ -14,10 +14,11 @@ from collections import defaultdict
 import psycopg2
 
 app = Flask(__name__)
-cors = CORS(app, resources=r"/api/*", allow_headers="Content-Type", supports_credentials=True)
+cors = CORS(app, resources=r"/api/*", allow_headers="Content-Type",
+            supports_credentials=True)
 api = restful.Api(app)
 
-## database
+# database
 database = 'postgresql://info247:test@localhost:5432/sfpd'
 engine = create_engine(database)
 Session = sessionmaker(bind=engine)
@@ -34,7 +35,9 @@ crime_api_v1 = "/api/v1/crime/"
 #     return func_wrap
 
 Base = declarative_base()
+
 class Crime(Base):
+
     """
     Crime Table
     """
@@ -48,25 +51,20 @@ class Crime(Base):
     pddistrict = Column(String)
     resolution = Column(String)
     address = Column(String)
-    x = Column(Float)
-    y = Column(Float)
+    x = Column(Float) # this is the longitude
+    y = Column(Float) # this is latitude
     pdid = Column(Integer, primary_key=True)
     geom = Column(Geometry('geography'))
-
-# This could be useful to make sure that we have consistent formating
-data_fields = {
-        'ARSON': fields.Integer,
-        }
 
 class CrimePolygon(restful.Resource):
     """
     Crime Polygon Class that wraps
     polygon types for the crime table
     """
-    # @marshal_with(data_fields)
     def get(self, coordinates):
         try:
-            poly_query = WKTElement('POLYGON((' + coordinates + '))', srid=4326)
+            poly_query = WKTElement(
+                'POLYGON((' + coordinates + '))', srid=4326)
             crime_cat = session.query(Crime.category, func.count(Crime.category)) \
                 .filter(Crime.geom.ST_Intersects(poly_query)) \
                 .group_by(Crime.category)
@@ -74,7 +72,10 @@ class CrimePolygon(restful.Resource):
             crime_dict = defaultdict(list)
             for crime in crime_cat:
                 crime_dict[crime[0]] = crime[1]
-            return {"data":crime_dict, "coordinates":coordinates}, 200
+            c1 = coordinates.split(",")
+            c2 = [x.split(" ") for x in c1]
+            coords = [[float(l1), float(l2)] for l1, l2 in c2]
+            return {"data": crime_dict, "coordinates": coords}, 200
         except:
             session.rollback()
             return {}, 400
@@ -84,4 +85,3 @@ api.add_resource(CrimePolygon, crime_api_v1 + "polygon/<coordinates>")
 
 if __name__ == '__main__':
     app.run(debug=True)
-

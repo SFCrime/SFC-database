@@ -145,6 +145,7 @@ drop column
 $ psql sfpd info247 -c "ALTER TABLE crime DROP COLUMN geom RESTRICT;"
 ```
 ## convert X, Y coordinates to `geography` data type
+## X is longitude and Y is latitude: See Docs: http://postgis.net/docs/ST_MakePoint.html
 ```bash
 $ psql sfpd info247 -c "UPDATE crime SET geom = ST_SetSRID(ST_MakePoint(X, Y), 4326)::geography;"
 ```
