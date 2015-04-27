@@ -89,26 +89,20 @@ class Event(restful.Resource):
             res.end_time = str(res.end_time)
             res.end_date = str(res.end_date)
             res.start_date = str(res.start_date)
+            res.shape_type = ""
 
             if res.is_polygon:
-                res.polygon = str(to_shape(res.polygon))
-                temp = re.findall(r"\(\((.*)\)\)", res.polygon)
+                res.shape_type = "polygon"
+                res.shape_string = str(to_shape(res.polygon))
+                temp = re.findall(r"\(\((.*)\)\)", res.shape_string)
+                print temp
                 t2 = temp[0].split(", ")
                 t3 = [val.split(" ") for val in t2]
-                res.polygon_points = [[float(l1), float(l2)] for l1, l2 in t3]
-                del(res.point)
-                del(res.line)
-# Will need to do the same filtering that I did above to the point/line types
-            if res.is_point:
-                res.point = str(to_shape(res.point))
-                del(res.polygon)
-                del(res.line)
+                res.shape_list = [[float(l1), float(l2)] for l1, l2 in t3]
 
-            if res.is_line:
-                res.line = str(to_shape(res.line))
-                del(res.point)
-                del(res.polygon)
-
+            del(res.point)
+            del(res.polygon)
+            del(res.line)
             del(res.is_point)
             del(res.is_line)
             del(res.is_polygon)

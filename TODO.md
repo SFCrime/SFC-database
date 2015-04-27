@@ -1,2 +1,3 @@
 - [ ] Set up Custom Types for Flask Restful. See: http://flask-restful.readthedocs.org/en/latest/extending.html
 - [ ] Need to make sure CORS is set up in a safe manner
+- [ ] Switch to a limited set of values instead of booleans for each one, for the shape types
