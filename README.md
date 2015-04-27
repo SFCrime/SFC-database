@@ -1,3 +1,8 @@
+Relevant Docs:
+- http://postgis.net/docs/using_postgis_dbmanagement.html#Geography_Basics
+- http://postgis.net/docs/ST_MakePoint.html
+
+
 # quick start: db
 ## install postgres and postgis for mac
 ```bash
@@ -145,7 +150,8 @@ drop column
 $ psql sfpd info247 -c "ALTER TABLE crime DROP COLUMN geom RESTRICT;"
 ```
 ## convert X, Y coordinates to `geography` data type
-## X is longitude and Y is latitude: See Docs: http://postgis.net/docs/ST_MakePoint.html
+## X is longitude and Y is latitude: 
+See Docs: http://postgis.net/docs/ST_MakePoint.html
 ```bash
 $ psql sfpd info247 -c "UPDATE crime SET geom = ST_SetSRID(ST_MakePoint(X, Y), 4326)::geography;"
 ```
