@@ -5,11 +5,12 @@ from flask.ext.cors import CORS
 from flask.ext.restful import fields, marshal_with
 
 from sqlalchemy import Column, Integer, String, Date, \
-    Time, Float, create_engine, func
+    Time, Float, Boolean, create_engine, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 from geoalchemy2 import Geometry, WKTElement
+from geoalchemy2.shape import to_shape
 from collections import defaultdict
 import psycopg2
 
@@ -25,6 +26,7 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 crime_api_v1 = "/api/v1/crime/"
+events_api_v1 = "/api/v1/events/"
 
 # Think Marshal Decorators will fix this
 # def response_decorator(func):
@@ -35,6 +37,7 @@ crime_api_v1 = "/api/v1/crime/"
 #     return func_wrap
 
 Base = declarative_base()
+
 
 class Crime(Base):
 
@@ -51,16 +54,84 @@ class Crime(Base):
     pddistrict = Column(String)
     resolution = Column(String)
     address = Column(String)
-    x = Column(Float) # this is the longitude
-    y = Column(Float) # this is latitude
+    x = Column(Float)  # this is the longitude
+    y = Column(Float)  # this is latitude
     pdid = Column(Integer, primary_key=True)
     geom = Column(Geometry('geography'))
 
+
+class EventDb(Base):
+
+    """
+    Events Table
+    """
+    __tablename__ = "events"
+    id_name = Column(String, primary_key=True)
+    name = Column(String)
+    year = Column(Integer)
+    start_date = Column(Date)
+    start_time = Column(Time)
+    end_date = Column(Date)
+    end_time = Column(Time)
+    is_point = Column(Boolean)
+    is_polygon = Column(Boolean)
+    is_line = Column(Boolean)
+    polygon = Column(Geometry('geography'))
+    line = Column(Geometry('geography'))
+    point = Column(Geometry('geography'))
+
+
+class Event(restful.Resource):
+
+    def get(self, event_id):
+        try:
+            res = session.query(EventDb).filter(
+                EventDb.id_name == event_id).first()
+            if res == None:
+                raise AttributeError("No Event")
+
+            res.start_time = str(res.start_time)
+            res.end_time = str(res.end_time)
+            res.end_date = str(res.end_date)
+            res.start_date = str(res.start_date)
+
+            if res.is_polygon:
+                res.polygon = str(to_shape(res.polygon))
+                del(res.point)
+                del(res.line)
+
+            if res.is_point:
+                res.point = str(to_shape(res.point))
+                del(res.polygon)
+                del(res.line)
+
+            if res.is_line:
+                res.line = str(to_shape(res.line))
+                del(res.point)
+                del(res.polygon)
+
+            del(res.is_point)
+            del(res.is_line)
+            del(res.is_polygon)
+            del(res._sa_instance_state)
+
+            return dict(vars(res).iteritems()), 200
+
+        except:
+            session.rollback()
+            return {}, 400
+
+    def post(self, event_id):
+        pass
+
+
 class CrimePolygon(restful.Resource):
+
     """
     Crime Polygon Class that wraps
     polygon types for the crime table
     """
+
     def get(self, coordinates):
         try:
             poly_query = WKTElement(
@@ -82,6 +153,7 @@ class CrimePolygon(restful.Resource):
 
 
 api.add_resource(CrimePolygon, crime_api_v1 + "polygon/<coordinates>")
+api.add_resource(Event, events_api_v1 + "<event_id>")
 
 if __name__ == '__main__':
     app.run(debug=True)
