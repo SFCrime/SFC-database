@@ -1,3 +1,6 @@
+Event = The Class Level Of an Event
+Event Instance = The instance level event
+
 Relevant Docs:
 - http://postgis.net/docs/using_postgis_dbmanagement.html#Geography_Basics
 - http://postgis.net/docs/ST_MakePoint.html
