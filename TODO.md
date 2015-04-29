@@ -2,6 +2,7 @@
 - [ ] Need to make sure CORS is set up in a safe manner
 - [ ] Switch to a limited set of values instead of booleans for each one, for the shape types
 - [ ] Abstract out database url (for production vs. local)
+- [ ] Consider using GeoJson for API
 
 # Visualizations
 - [ ] Event-to-event comparison ("event" = date-time + geometry); Allow user to select up to 5 different dates or date ranges of equal length
