@@ -17,7 +17,7 @@ crime_api = api_version + "crime/"
 events_api = api_version + "events/"
 
 
-api.add_resource(Crime, crime_api + "polygon/<coordinates>")# still needs to be edited to reflect new layout
+api.add_resource(Crime, crime_api)
 api.add_resource(Event, events_api + "<event_id>")
 
 if __name__ == '__main__':
