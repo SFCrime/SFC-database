@@ -38,28 +38,13 @@ class Crime(Resource):
         resp = base_response()
         poly = Polygon(parseCoordinates(args.coordinates))
 
-        if args.type.lower() == "polygon":
-            crimes = FeatureCollection([featurize(x) for x in polygonQuery(args.coordinates)])
-
-        print crimes
-
-
-
-        return {"end":"true"}, 200
         try:
-            poly_query = WKTElement(
-                'POLYGON((' + coordinates + '))', srid=4326)
-            crime_cat = session.query(CrimeModel.category, func.count(CrimeModel.category)) \
-                .filter(CrimeModel.geom.ST_Intersects(poly_query)) \
-                .group_by(CrimeModel.category)
-
-            crime_dict = defaultdict(list)
-            for crime in crime_cat:
-                crime_dict[crime[0]] = crime[1]
-            c1 = coordinates.split(",")
-            c2 = [x.split(" ") for x in c1]
-            coords = [[float(l1), float(l2)] for l1, l2 in c2]
-            return {"data": crime_dict, "coordinates": coords}, 200
-        except:
+            if args.type.lower() == "polygon":
+                crimes = FeatureCollection([featurize(x) for x in polygonQuery(args.coordinates)])
+            resp['geojson'] = crimes
+            resp['message'] = None
+            resp['geojson_request'] = poly
+            return resp, 200
+        except ValueError:
             session.rollback()
             return {}, 400
