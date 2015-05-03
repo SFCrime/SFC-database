@@ -14,7 +14,7 @@ from utils.resource_utils import base_response
 def polygonQuery(coordinates):
     poly = WKTElement("POLYGON((" + coordinates + "))", srid=4236)
     crimes = session.query(CrimeModel.category, ST_AsGeoJSON(
-        CrimeModel.geom)).filter(CrimeModel.geom.ST_Intersects(poly))
+        CrimeModel.geom)).filter(CrimeModel.geom.ST_Intersects(poly)).limit(5)
     return crimes
 
 
@@ -47,9 +47,10 @@ class Crime(Resource):
 
         try:
             if args.type.lower() == "polygon":
-                crimes = FeatureCollection(
-                    [featurize(x) for x in polygonQuery(args.coordinates)])
-            resp['geojson'] = crimes
+                crimes = FeatureCollection([
+                    featurize(x) for x in polygonQuery(args.coordinates)
+                ])
+            resp['geojson_crime'] = crimes
             resp['message'] = None
             resp['geojson_shape'] = poly
             return resp, 200
