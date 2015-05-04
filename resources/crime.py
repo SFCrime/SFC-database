@@ -10,8 +10,12 @@ import geojson
 # https://github.com/frewsxcv/python-geojson
 from utils.resource_utils import base_response
 
+# need to add in filter support for dates, this means that we need to
+# change the parms for this function as well as the filter which can be
+# comma seperated
 
-def polygonQuery(coordinates):
+
+def polygonQuery(coordinates, start_date, end_date):
     poly = WKTElement("POLYGON((" + coordinates + "))", srid=4236)
     crimes = session.query(
         CrimeModel.category, CrimeModel.descript, CrimeModel.date,
