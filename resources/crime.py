@@ -55,6 +55,8 @@ class Crime(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('type', type=str, required=True)
         parser.add_argument("coordinates", type=str, required=True)
+        parser.add_argument("start_date", type=str)
+        parser.add_argument("end_date", type=str)
         args = parser.parse_args()
         resp = base_response()
         poly = Polygon(parseCoordinates(args.coordinates))
