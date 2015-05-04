@@ -3,9 +3,9 @@ from flask_restful import reqparse
 from database_settings import CrimeModel, session
 from geoalchemy2 import Geometry, WKTElement
 from geoalchemy2.functions import ST_AsGeoJSON
-from collections import defaultdict
 from sqlalchemy import func
 from geojson import Point, Polygon, LineString, Feature, FeatureCollection
+import datetime
 import geojson
 # https://github.com/frewsxcv/python-geojson
 from utils.resource_utils import base_response
@@ -13,8 +13,11 @@ from utils.resource_utils import base_response
 
 def polygonQuery(coordinates):
     poly = WKTElement("POLYGON((" + coordinates + "))", srid=4236)
-    crimes = session.query(CrimeModel.category, ST_AsGeoJSON(
-        CrimeModel.geom)).filter(CrimeModel.geom.ST_Intersects(poly)).limit(5)
+    crimes = session.query(
+        CrimeModel.category, CrimeModel.descript, CrimeModel.date,
+        CrimeModel.time, CrimeModel.resolution, CrimeModel.pddistrict,
+        CrimeModel.dayofweek, ST_AsGeoJSON(CrimeModel.geom)).filter(
+            CrimeModel.geom.ST_Intersects(poly)).limit(200)
     return crimes
 
 
@@ -25,8 +28,19 @@ def parseCoordinates(coord_string):
 
 
 def featurize(point):
-    geom = geojson.loads(point[1])
-    props = {"crime_category": point[0]}
+    geom = geojson.loads(point[7])
+    features = ["category", "description", "date", "time", "resolution",
+                "pddistrict", "dayofweek"]
+    props = {}
+    for count, val in enumerate(features):
+        props[val] = point[count]
+
+    if "date" in props:
+        props['date'] = props['date'].strftime('%Y-%m-%d')
+
+    if "time" in props:
+        props['time'] = props['time'].strftime('%H:%M:%S')
+
     feature = Feature(geometry=geom, properties=props)
     return feature
 
