@@ -21,7 +21,8 @@ def polygonQuery(coordinates, start_date, end_date):
         CrimeModel.category, CrimeModel.descript, CrimeModel.date,
         CrimeModel.time, CrimeModel.resolution, CrimeModel.pddistrict,
         CrimeModel.dayofweek, ST_AsGeoJSON(CrimeModel.geom)).filter(
-            CrimeModel.geom.ST_Intersects(poly)).limit(200)
+            CrimeModel.geom.ST_Intersects(poly), CrimeModel.date > start_date,
+            CrimeModel.date < end_date).limit(200)
     return crimes
 
 
@@ -59,17 +60,16 @@ class Crime(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('type', type=str, required=True)
         parser.add_argument("coordinates", type=str, required=True)
-        parser.add_argument("start_date", type=str)
-        parser.add_argument("end_date", type=str)
+        parser.add_argument("start_date", type=str, required=True)
+        parser.add_argument("end_date", type=str, required=True)
         args = parser.parse_args()
         resp = base_response()
         poly = Polygon(parseCoordinates(args.coordinates))
 
         try:
             if args.type.lower() == "polygon":
-                crimes = FeatureCollection([
-                    featurize(x) for x in polygonQuery(args.coordinates)
-                ])
+                crimes = FeatureCollection([featurize(x) for x in polygonQuery(
+                    args.coordinates, args.start_date, args.end_date)])
             resp['geojson_crime'] = crimes
             resp['message'] = None
             resp['geojson_shape'] = poly
