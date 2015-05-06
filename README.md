@@ -1,4 +1,9 @@
+#INFO
+This is a fork of the original master branch when we decided to drop Backbone as the view
+
+
 Event = The Class Level Of an Event
+
 Event Instance = The instance level event
 
 Relevant Docs:
@@ -157,7 +162,7 @@ drop column
 $ psql sfpd info247 -c "ALTER TABLE crime DROP COLUMN geom RESTRICT;"
 ```
 ## convert X, Y coordinates to `geography` data type
-## X is longitude and Y is latitude: 
+## X is longitude and Y is latitude:
 See Docs: http://postgis.net/docs/ST_MakePoint.html
 
 ```bash
@@ -190,9 +195,9 @@ year | count
   2003 |   105
 (13 rows)
 ```
-  
+
 total crimes by year in golden gate park
-  
+
 ```bash
   $ psql sfpd info247 -c "SELECT EXTRACT(YEAR FROM date) as year, COUNT(*) FROM crime WHERE ST_Intersects(geom, ST_PolygonFromText('POLYGON((-122.51103401184083 37.771393199665255, -122.46597290039062 37.77356423357254, -122.45455741882324 37.774785412131244, -122.45301246643065 37.76637243960179, -122.45738983154297 37.76589748519095, -122.45867729187012 37.7662367386528, -122.51026153564452 37.7641333421029, -122.51103401184083 37.771393199665255))', 4326)) GROUP BY year ORDER BY year DESC;"
 ```
