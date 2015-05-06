@@ -22,7 +22,7 @@ def polygonQuery(coordinates, start_date, end_date):
         CrimeModel.time, CrimeModel.resolution, CrimeModel.pddistrict,
         CrimeModel.dayofweek, ST_AsGeoJSON(CrimeModel.geom)).filter(
             CrimeModel.geom.ST_Intersects(poly), CrimeModel.date > start_date,
-            CrimeModel.date < end_date).limit(200)
+            CrimeModel.date < end_date)
     return crimes
 
 
