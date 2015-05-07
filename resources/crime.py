@@ -61,8 +61,8 @@ def EvEComparison(args):
 def EvBaselineComparison(args):
     crimes_1 = FeatureCollection([featurize(x) for x in polygonQuery(
         args.coordinates, args.start_date_1, args.end_date_1)])
-    crimes_2 = FeatureCollection([featurize(x) for x in polygonQuery(
-        args.coordinates, args.start_date_2, args.end_date_2)])
+    # here's where we need to include the baseline calculations
+    crimes_2 = None
     return [crimes_1, crimes_2]
 
 
