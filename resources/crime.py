@@ -50,6 +50,22 @@ def featurize(point):
     return feature
 
 
+def EvEComparison(args):
+    crimes_1 = FeatureCollection([featurize(x) for x in polygonQuery(
+        args.coordinates, args.start_date_1, args.end_date_1)])
+    crimes_2 = FeatureCollection([featurize(x) for x in polygonQuery(
+        args.coordinates, args.start_date_2, args.end_date_2)])
+    return [crimes_1, crimes_2]
+
+
+def EvBaselineComparison(args):
+    crimes_1 = FeatureCollection([featurize(x) for x in polygonQuery(
+        args.coordinates, args.start_date_1, args.end_date_1)])
+    crimes_2 = FeatureCollection([featurize(x) for x in polygonQuery(
+        args.coordinates, args.start_date_2, args.end_date_2)])
+    return [crimes_1, crimes_2]
+
+
 class Crime(Resource):
     """
     Crime Polygon Class that wraps
@@ -59,18 +75,22 @@ class Crime(Resource):
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument('type', type=str, required=True)
+        parser.add_argument('geo_type', type=str, required=True)
         parser.add_argument("coordinates", type=str, required=True)
-        parser.add_argument("start_date", type=str, required=True)
-        parser.add_argument("end_date", type=str, required=True)
+        parser.add_argument("start_date_1", type=str, required=True)
+        parser.add_argument("start_date_2", type=str, required=True)
+        parser.add_argument("end_date_1", type=str)
+        parser.add_argument("end_date_2", type=str)
         args = parser.parse_args()
         resp = base_response()
         poly = Polygon(parseCoordinates(args.coordinates))
 
         try:
-            if args.type.lower() == "polygon":
-                crimes = FeatureCollection([featurize(x) for x in polygonQuery(
-                    args.coordinates, args.start_date, args.end_date)])
-            resp['geojson_crime'] = crimes
+            if args.type == "1v1":
+                crime = EvEComparison(args)
+            else:
+                crime = EvBaselineComparison(args)
+            resp['geojson_crime'] = crime
             resp['message'] = None
             resp['geojson_shape'] = poly
             return resp, 200
