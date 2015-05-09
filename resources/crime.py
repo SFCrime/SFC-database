@@ -58,21 +58,21 @@ class Crime(Resource):
 
     def get(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('type', type=str, required=True)
-        parser.add_argument("coordinates", type=str, required=True)
         parser.add_argument("start_date", type=str, required=True)
         parser.add_argument("end_date", type=str, required=True)
         args = parser.parse_args()
         resp = base_response()
-        poly = Polygon(parseCoordinates(args.coordinates))
 
         try:
-            if args.type.lower() == "polygon":
-                crimes = FeatureCollection([featurize(x) for x in polygonQuery(
-                    args.coordinates, args.start_date, args.end_date)])
+            crimes = session.query(
+                CrimeModel.category, CrimeModel.descript, CrimeModel.date,
+                CrimeModel.time, CrimeModel.resolution, CrimeModel.pddistrict,
+                CrimeModel.dayofweek, ST_AsGeoJSON(CrimeModel.geom)).filter(
+                    CrimeModel.date > args.start_date,
+                    CrimeModel.date < args.end_date).order_by(CrimeModel.date)
+            crimes = FeatureCollection([featurize(x) for x in crimes])
             resp['geojson_crime'] = crimes
             resp['message'] = None
-            resp['geojson_shape'] = poly
             return resp, 200
         except ValueError:
             session.rollback()
